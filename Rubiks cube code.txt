@@ -1,0 +1,77 @@
+// Variables for storing the rotation of each face of the cube
+var xFaceRotation = 0.0f;
+var yFaceRotation = 0.0f;
+var zFaceRotation = 0.0f;
+
+// Variables for storing the direction of rotation
+var xDirection = 1;
+var yDirection = 1;
+var zDirection = 1;
+
+// Variables for storing the speed of rotation
+var xSpeed = 50.0f;
+var ySpeed = 50.0f;
+var zSpeed = 50.0f;
+
+// Function to handle the rotation of the cube
+public void RotateCube()
+{
+    // Calculate the rotation of each face
+    xFaceRotation += xSpeed * xDirection * Time.deltaTime;
+    yFaceRotation += ySpeed * yDirection * Time.deltaTime;
+    zFaceRotation += zSpeed * zDirection * Time.deltaTime;
+    
+    // Limit the rotation to 360 degrees
+    xFaceRotation = xFaceRotation % 360;
+    yFaceRotation = yFaceRotation % 360;
+    zFaceRotation = zFaceRotation % 360;
+    
+    // Apply the rotation to the cube
+    transform.rotation = Quaternion.Euler(xFaceRotation, yFaceRotation, zFaceRotation);
+}
+
+// Function to change the direction of rotation
+public void ChangeDirection(string axis)
+{
+    if (axis == "x")
+    {
+        xDirection *= -1;
+    }
+    else if (axis == "y")
+    {
+        yDirection *= -1;
+    }
+    else if (axis == "z")
+    {
+        zDirection *= -1;
+    }
+}
+
+// Function to handle input from the player
+public void HandleInput()
+{
+    // Check for the player's left hand trigger press
+    if (Networking.LocalPlayer.GetButtonDown("LeftTrigger"))
+    {
+        ChangeDirection("x");
+    }
+    
+    // Check for the player's right hand trigger press
+    if (Networking.LocalPlayer.GetButtonDown("RightTrigger"))
+    {
+        ChangeDirection("y");
+    }
+    
+    // Check for the player's left hand grip press
+    if (Networking.LocalPlayer.GetButtonDown("LeftGrip"))
+    {
+        ChangeDirection("z");
+    }
+}
+
+// Update function to run every frame
+private void Update()
+{
+    HandleInput();
+    RotateCube();
+}
