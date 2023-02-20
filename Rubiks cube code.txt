@@ -1,77 +1,81 @@
-// Variables for storing the rotation of each face of the cube
-var xFaceRotation = 0.0f;
-var yFaceRotation = 0.0f;
-var zFaceRotation = 0.0f;
+// Define the faces of the Rubik's Cube
+private int[,] cube = new int[6, 9];
 
-// Variables for storing the direction of rotation
-var xDirection = 1;
-var yDirection = 1;
-var zDirection = 1;
-
-// Variables for storing the speed of rotation
-var xSpeed = 50.0f;
-var ySpeed = 50.0f;
-var zSpeed = 50.0f;
-
-// Function to handle the rotation of the cube
-public void RotateCube()
+void Start()
 {
-    // Calculate the rotation of each face
-    xFaceRotation += xSpeed * xDirection * Time.deltaTime;
-    yFaceRotation += ySpeed * yDirection * Time.deltaTime;
-    zFaceRotation += zSpeed * zDirection * Time.deltaTime;
-    
-    // Limit the rotation to 360 degrees
-    xFaceRotation = xFaceRotation % 360;
-    yFaceRotation = yFaceRotation % 360;
-    zFaceRotation = zFaceRotation % 360;
-    
-    // Apply the rotation to the cube
-    transform.rotation = Quaternion.Euler(xFaceRotation, yFaceRotation, zFaceRotation);
-}
-
-// Function to change the direction of rotation
-public void ChangeDirection(string axis)
-{
-    if (axis == "x")
+    // Initialize the Rubik's Cube to its solved state
+    for (int i = 0; i < 6; i++)
     {
-        xDirection *= -1;
-    }
-    else if (axis == "y")
-    {
-        yDirection *= -1;
-    }
-    else if (axis == "z")
-    {
-        zDirection *= -1;
+        for (int j = 0; j < 9; j++)
+        {
+            cube[i, j] = i;
+        }
     }
 }
 
-// Function to handle input from the player
-public void HandleInput()
+// Rotate the face of the Rubik's Cube in the given direction
+public void RotateFace(int face, int direction)
 {
-    // Check for the player's left hand trigger press
-    if (Networking.LocalPlayer.GetButtonDown("LeftTrigger"))
+    int[] temp = new int[9];
+
+    // Save the original state of the face
+    for (int i = 0; i < 9; i++)
     {
-        ChangeDirection("x");
+        temp[i] = cube[face, i];
     }
-    
-    // Check for the player's right hand trigger press
-    if (Networking.LocalPlayer.GetButtonDown("RightTrigger"))
+
+    // Rotate the face in the given direction
+    if (direction == 1) // Clockwise
     {
-        ChangeDirection("y");
+        cube[face, 0] = temp[6];
+        cube[face, 1] = temp[3];
+        cube[face, 2] = temp[0];
+        cube[face, 3] = temp[7];
+        cube[face, 5] = temp[1];
+        cube[face, 6] = temp[8];
+        cube[face, 7] = temp[5];
+        cube[face, 8] = temp[2];
     }
-    
-    // Check for the player's left hand grip press
-    if (Networking.LocalPlayer.GetButtonDown("LeftGrip"))
+    else // Counter-clockwise
     {
-        ChangeDirection("z");
+        cube[face, 0] = temp[2];
+        cube[face, 1] = temp[5];
+        cube[face, 2] = temp[8];
+        cube[face, 3] = temp[1];
+        cube[face, 5] = temp[7];
+        cube[face, 6] = temp[0];
+        cube[face, 7] = temp[3];
+        cube[face, 8] = temp[6];
     }
 }
 
-// Update function to run every frame
-private void Update()
+// Rotate the entire Rubik's Cube in the given direction
+public void RotateCube(int direction)
 {
-    HandleInput();
-    RotateCube();
-}
+    int[,] temp = new int[6, 9];
+
+    // Save the original state of the Rubik's Cube
+    for (int i = 0; i < 6; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            temp[i, j] = cube[i, j];
+        }
+    }
+
+    // Rotate the Rubik's Cube in the given direction
+    if (direction == 1) // Clockwise
+    {
+        // Rotate the front face
+        cube[0, 0] = temp[0, 6];
+        cube[0, 1] = temp[0, 3];
+        cube[0, 2] = temp[0, 0];
+        cube[0, 3] = temp[0, 7];
+        cube[0, 5] = temp[0, 1];
+        cube[0, 6] = temp[0, 8];
+        cube[0, 7] = temp[0, 5];
+        cube[0, 8] = temp[0, 2];
+
+        // Rotate the top face
+        cube[1, 0] = temp[2, 0];
+        cube[1, 1] = temp[2, 1
